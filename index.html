@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Дорога в Казахстан — roadmap переезда</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EDE6D6;
+    --bg-deep: #E2D8BF;
+    --card: #FBF8F1;
+    --card-line: #D8CCAC;
+    --ink: #2B241C;
+    --ink-soft: #6E6350;
+    --ink-faint: #9C9078;
+    --teal: #1F6F78;
+    --teal-deep: #164F56;
+    --gold: #C08A17;
+    --gold-soft: #E9C874;
+    --done-bg: #E4EEE1;
+    --done-line: #7FA97A;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(43,36,28,0.06), 0 6px 20px -8px rgba(43,36,28,0.15);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 500px at 85% -10%, rgba(31,111,120,0.08), transparent 60%),
+      var(--bg);
+    color: var(--ink);
+    font-family: 'Work Sans', sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 0 80px 0;
+  }
+  .wrap{ max-width: 880px; margin: 0 auto; padding: 40px 22px 0; }
+
+  /* ---------- Header ---------- */
+  header{
+    display:flex; flex-direction:column; gap: 18px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--card-line);
+    margin-bottom: 36px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12.5px; letter-spacing: 0.11em; text-transform: uppercase;
+    color: var(--teal-deep); font-weight:500;
+    display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block;}
+  h1{
+    font-family:'Newsreader', serif;
+    font-weight: 600;
+    font-size: clamp(32px, 5vw, 46px);
+    margin: 0;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .subtitle{ color: var(--ink-soft); font-size: 15.5px; max-width: 56ch; }
+
+  .progress-overall{
+    margin-top: 6px;
+    display:flex; align-items:center; gap:16px;
+  }
+  .progress-track{
+    position:relative;
+    flex:1;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--bg-deep);
+    border: 1px solid var(--card-line);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--teal), var(--gold));
+    width:0%;
+    transition: width .4s ease;
+  }
+  .progress-num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 14px; color: var(--ink-soft); white-space:nowrap;
+    min-width: 92px; text-align:right;
+  }
+  .progress-num b{ color:var(--ink); font-size:17px; }
+
+  /* ---------- Route / phases ---------- */
+  .route{
+    position:relative;
+    padding-left: 42px;
+  }
+  .route::before{
+    content:"";
+    position:absolute; left:15px; top: 10px; bottom: 40px;
+    width: 2px;
+    background: repeating-linear-gradient(to bottom, var(--card-line) 0 6px, transparent 6px 12px);
+  }
+  .phase{ position:relative; margin-bottom: 30px; }
+  .phase-marker{
+    position:absolute; left:-42px; top: 2px;
+    width: 32px; height:32px; border-radius:50%;
+    background: var(--card);
+    border: 2px solid var(--card-line);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:500;
+    color: var(--ink-soft);
+    transition: all .3s ease;
+    z-index:2;
+  }
+  .phase-marker.complete{
+    background: var(--teal); border-color: var(--teal); color:#fff;
+  }
+  .phase-marker.partial{ border-color: var(--gold); color: var(--gold); }
+
+  .phase-card{
+    background: var(--card);
+    border: 1px solid var(--card-line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .phase-head{
+    display:flex; align-items:center; gap:14px;
+    padding: 16px 18px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .phase-head:hover{ background: rgba(31,111,120,0.035); }
+  .phase-titles{ flex:1; min-width:0; }
+  .phase-title{
+    font-family:'Newsreader', serif;
+    font-size: 21px; font-weight:600; color:var(--ink);
+    margin:0;
+  }
+  .phase-desc{ font-size: 13.5px; color: var(--ink-faint); margin-top:2px; }
+  .phase-count{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px; color: var(--ink-soft);
+    background: var(--bg-deep);
+    border:1px solid var(--card-line);
+    padding: 3px 9px; border-radius: 999px;
+    white-space:nowrap;
+  }
+  .chevron{
+    width:18px; height:18px; flex-shrink:0;
+    transition: transform .25s ease;
+    color: var(--ink-faint);
+  }
+  .phase.collapsed .chevron{ transform: rotate(-90deg); }
+  .phase-body{
+    border-top: 1px solid var(--card-line);
+    padding: 6px 18px 14px;
+  }
+  .phase.collapsed .phase-body{ display:none; }
+
+  .task{
+    display:flex; align-items:flex-start; gap:12px;
+    padding: 11px 4px;
+    border-bottom: 1px dashed var(--card-line);
+  }
+  .task:last-child{ border-bottom:none; }
+  .task-check{
+    flex-shrink:0; margin-top:2px;
+    width:20px; height:20px; border-radius:6px;
+    border: 1.5px solid var(--ink-faint);
+    background: #fff;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: all .15s ease;
+  }
+  .task-check:hover{ border-color: var(--teal); }
+  .task-check svg{ opacity:0; transform: scale(.6); transition: all .15s ease; width:13px; height:13px; }
+  .task.done .task-check{ background: var(--teal); border-color: var(--teal); }
+  .task.done .task-check svg{ opacity:1; transform: scale(1); }
+  .task-text{ flex:1; min-width:0; }
+  .task-title{ font-size:15px; color:var(--ink); font-weight:500; }
+  .task.done .task-title{ color: var(--ink-faint); text-decoration: line-through; text-decoration-color: var(--ink-faint); }
+  .task-note{ font-size: 13px; color: var(--ink-soft); margin-top:2px; }
+  .task-note a{ color: var(--teal-deep); }
+  .task-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; color: var(--gold); background: rgba(192,138,23,0.12);
+    padding:1px 6px; border-radius:5px; margin-left:6px; white-space:nowrap;
+  }
+
+  /* ---------- Reference / budget ---------- */
+  .ref-card{
+    background: var(--card);
+    border:1px solid var(--card-line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px 22px;
+    margin-top: 8px;
+  }
+  .ref-title{ font-family:'Newsreader', serif; font-size:20px; font-weight:600; margin:0 0 4px; }
+  .ref-sub{ font-size:13.5px; color:var(--ink-faint); margin-bottom:14px; }
+  table.budget{ width:100%; border-collapse:collapse; font-size:14.5px; }
+  table.budget td{ padding: 7px 4px; border-bottom: 1px dashed var(--card-line); }
+  table.budget td:last-child{ text-align:right; font-family:'IBM Plex Mono', monospace; color: var(--ink); white-space:nowrap; }
+  table.budget tr.total td{ border-top: 1.5px solid var(--ink); border-bottom:none; font-weight:600; padding-top:10px; }
+  table.budget tr.total td:last-child{ color: var(--teal-deep); font-size:16px; }
+  .ref-note{ font-size:12.5px; color:var(--ink-faint); margin-top:10px; }
+
+  footer{ text-align:center; margin-top:44px; font-size:12.5px; color:var(--ink-faint); }
+  .reset-btn{
+    background:none; border:1px solid var(--card-line); color:var(--ink-soft);
+    font-family:'Work Sans',sans-serif; font-size:12.5px; padding:6px 12px; border-radius:8px; cursor:pointer;
+  }
+  .reset-btn:hover{ border-color:var(--ink-faint); color:var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow"><span class="dot"></span>ROADMAP · РФ → КАЗАХСТАН</div>
+    <h1>Дорога в Казахстан</h1>
+    <div class="subtitle">Все дела по переезду, собранные в один маршрут — от сборов до легализации. Отмечайте сделанное, прогресс сохраняется автоматически.</div>
+    <div class="progress-overall">
+      <div class="progress-track"><div class="progress-fill" id="overallFill"></div></div>
+      <div class="progress-num"><b id="overallPct">0%</b> · <span id="overallCount">0/0</span></div>
+    </div>
+  </header>
+
+  <div class="route" id="route"></div>
+
+  <div class="ref-card">
+    <div class="ref-title">Список возможных трат</div>
+    <div class="ref-sub">Ориентировочный бюджет из ваших заметок — для справки, не чек-лист</div>
+    <table class="budget" id="budgetTable"></table>
+    <div class="ref-note">Без учёта пунктов без указанной суммы («сняться с воинского учёта», «доверенности» — вынесены в чек-лист выше).</div>
+  </div>
+
+  <footer>
+    Данные хранятся только у вас в браузере · <button class="reset-btn" id="resetBtn">Сбросить все отметки</button>
+  </footer>
+
+</div>
+
+<script>
+const CHECK_SVG = '<svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+const phases = [
+  {
+    id: 'prep',
+    title: 'Подготовка в России',
+    desc: 'Квартира в Екатеринбурге, документы, авто',
+    tasks: [
+      {id:'a1', title:'Отвезти вещи к Тоне', note:''},
+      {id:'a2', title:'Постелить/заменить линолеум в квартире', note:'бюджет: 5 000 ₽'},
+      {id:'a3', title:'Повесить/снять шторы', note:'бюджет: 2 000 ₽'},
+      {id:'a4', title:'Почистить сливы', note:''},
+      {id:'a5', title:'Генеральная уборка квартиры', note:''},
+      {id:'a6', title:'Приклеить ручку', note:''},
+      {id:'a7', title:'Проверить загранпаспорта', note:'срок действия, наличие у всех членов семьи'},
+      {id:'a8', title:'Сняться с воинского учёта', note:''},
+      {id:'a9', title:'Оформить доверенности', note:'если кто-то будет вести дела в РФ вместо вас'},
+      {id:'a10', title:'Проверить/оформить водительские права', note:'бюджет: 7 000 ₽'},
+      {id:'a11', title:'Оформить страховку на поездку/авто', note:'бюджет: 5 000 ₽'},
+      {id:'a12', title:'Оплатить транспортный налог', note:'бюджет: 15 000 ₽'},
+      {id:'a13', title:'Купить недостающее для дороги', note:'табуреты и т.п. · бюджет: 2 000 ₽'},
+    ]
+  },
+  {
+    id: 'border',
+    title: 'Пересечение границы и въезд',
+    desc: 'Документы на границе, первые уведомления',
+    tasks: [
+      {id:'b1', title:'Проверить документ для въезда', note:'внутренний или загранпаспорт — оба варианта подходят гражданам РФ'},
+      {id:'b2', title:'Подать заявку QazETA', note:'нужно за 72 часа до въезда, для граждан с безвизовым режимом'},
+      {id:'b3', title:'Пересечь границу', note:'помните: находиться в стране можно 90 дней без РВП'},
+      {id:'b4', title:'Уведомление о прибытии иностранца (eQonaq)', note:'оформляет принимающая сторона в течение 3 дней после заселения', link:'https://eqonaq.kz/'},
+      {id:'b5', title:'Распечатать уведомление о прибытии', note:'понадобится для ИИН, РВП, Kaspi и др.'},
+    ]
+  },
+  {
+    id: 'firstdays',
+    title: 'Первые дни в Казахстане',
+    desc: 'ИИН, карта, симка, обмен денег',
+    tasks: [
+      {id:'c1', title:'Купить казахстанскую сим-карту', note:''},
+      {id:'c2', title:'Оформить ИИН', note:'в ЦОНе, обычно готов через 3–4 часа, бесплатно'},
+      {id:'c3', title:'Открыть карту Kaspi', note:'единственный банк, выдающий карту до РВП (сейчас на 8 мес.)'},
+      {id:'c4', title:'Обменять рубли на тенге', note:'обменник или банкомат ВТБ Казахстан (карты «Мир»)'},
+      {id:'c5', title:'Пройти дактилоскопию', note:'в отделении миграционной полиции, бесплатно'},
+    ]
+  },
+  {
+    id: 'housing',
+    title: 'Жильё',
+    desc: 'Поиск, договор, прописка',
+    tasks: [
+      {id:'d1', title:'Изучить районы и инфраструктуру', note:'2ГИС — пешая доступность, Yandex GO — время на такси'},
+      {id:'d2', title:'Найти квартиру на Krisha.kz', note:'звонить по телефону, не писать сообщения'},
+      {id:'d3', title:'Проверить арендодателя и договор', note:'сверить со списком «каких квартир избегать»'},
+      {id:'d4', title:'Подписать договор аренды', note:'бюджет первый месяц: 43 000 ₽'},
+      {id:'d5', title:'Оформить нотариальное согласие на прописку', note:'от 2 500 ₽, слово именно «согласие»'},
+      {id:'d6', title:'Договориться об оплате коммуналки и интернета', note:'обычно 25 000–40 000 ₽/мес, чаще всего через Kaspi'},
+    ]
+  },
+  {
+    id: 'work',
+    title: 'Работа и РВП',
+    desc: 'Трудоустройство и легализация через работодателя',
+    tasks: [
+      {id:'e1', title:'Разослать резюме', note:'hh.kz, enbek.kz — искать можно удалённо ещё до приезда'},
+      {id:'e2', title:'Выйти на работу / получить оффер', note:'официальное трудоустройство обычно занимает 30–60 дней'},
+      {id:'e3', title:'Оформить медстраховку (ВМС)', note:'от 10 000 тенге, полис сразу после оплаты'},
+      {id:'e4', title:'Работодатель подаёт заявление на РВП', note:'через eGov или ЦОН, рассмотрение 1 рабочий день'},
+      {id:'e5', title:'Собрать пакет документов от себя', note:'паспорт, страховка, согласие на прописку, уведомление, ИИН, дактилоскопия'},
+      {id:'e6', title:'Получить готовое РВП', note:'выдаётся на 1 год, продлевать не позднее 30 дней до окончания'},
+    ]
+  },
+  {
+    id: 'family',
+    title: 'Воссоединение с семьёй',
+    desc: 'Если требуется — РВП для супруга(и) и детей',
+    tasks: [
+      {id:'f1', title:'Решить, нужно ли расписываться в Казахстане', note:'можно оформить брак уже по прилёту'},
+      {id:'f2', title:'Подать заявление на РВП для родственников', note:'подаёт заявитель — супруг(а) с действующим РВП/ВНЖ/гражданством'},
+      {id:'f3', title:'Собрать документы на каждого члена семьи', note:'свой пакет на каждого + свидетельство о браке/рождении'},
+    ]
+  },
+  {
+    id: 'pets',
+    title: 'Питомцы',
+    desc: 'Если едут с вами',
+    tasks: [
+      {id:'g1', title:'Чипировать животное', note:'обязательно, делается до вакцинации от бешенства'},
+      {id:'g2', title:'Сделать вакцинацию', note:'не менее чем за 21–30 дней до въезда, действует до 1 года'},
+      {id:'g3', title:'Обработать от паразитов', note:'за 3–5 дней до поездки, отметка в ветпаспорт'},
+      {id:'g4', title:'Получить ветсвидетельство форма №1', note:'действует всего 5 дней — оформлять перед самым выездом'},
+      {id:'g5', title:'Проверить правила перевозки', note:'у авиакомпании или КТЖ, если едете поездом'},
+    ]
+  },
+  {
+    id: 'finance',
+    title: 'Финансы и разное',
+    desc: 'ЭЦП, переводы, бюджет',
+    tasks: [
+      {id:'h1', title:'Оформить ЭЦП физлица', note:'в ЦОНе, бесплатно, 3 этапа на месте'},
+      {id:'h2', title:'Заложить бюджет на переезд', note:'см. таблицу ниже, итог ~244 000 ₽'},
+      {id:'h3', title:'Настроить переводы между банками РФ↔КЗ', note:'через «переводы за границу» в приложении банка, комиссия ~3–7%'},
+    ]
+  },
+];
+
+const budget = [
+  ['Билет до русской границы', 5000],
+  ['Права', 7000],
+  ['Бензин по РФ', 11000],
+  ['Страховка', 5000],
+  ['Налог', 15000],
+  ['Табуреты', 2000],
+  ['Линолеум', 5000],
+  ['Шторы', 2000],
+  ['Квартира КЗ — аренда', 43000],
+  ['Суточно КЗ', 7500],
+  ['Еда в дорогу и так', 3000],
+  ['С собой деньги', 15000],
+  ['Бензин по КЗ', 8000],
+  ['Суточно ЕКБ', 2500],
+  ['Жить месяц (еда, коты и т.д.)', 40000],
+  ['Квартира КЗ — аренда (след. месяц)', 43000],
+  ['Ехать на поезде до РП', 30000],
+];
+
+const STORAGE_KEY = 'kz-roadmap-state-v1';
+let state = {};
+
+function fmt(n){ return n.toLocaleString('ru-RU') + ' ₽'; }
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    state = raw ? JSON.parse(raw) : {};
+  }catch(e){ console.error('storage read error', e); state = {}; }
+}
+
+function setTaskState(id, val){
+  state[id] = val;
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e){ console.error('storage write error', e); }
+}
+
+function render(){
+  const route = document.getElementById('route');
+  route.innerHTML = '';
+  let totalAll = 0, doneAll = 0;
+
+  phases.forEach((phase, idx) => {
+    const total = phase.tasks.length;
+    const done = phase.tasks.filter(t => state[t.id]).length;
+    totalAll += total; doneAll += done;
+
+    const phaseEl = document.createElement('div');
+    phaseEl.className = 'phase';
+    phaseEl.dataset.phase = phase.id;
+
+    const markerClass = done === total ? 'complete' : (done > 0 ? 'partial' : '');
+    const markerContent = done === total ? CHECK_SVG : (idx+1);
+
+    phaseEl.innerHTML = `
+      <div class="phase-marker ${markerClass}">${done===total ? CHECK_SVG : (idx+1)}</div>
+      <div class="phase-card">
+        <div class="phase-head" data-toggle="${phase.id}">
+          <div class="phase-titles">
+            <p class="phase-title">${phase.title}</p>
+            <div class="phase-desc">${phase.desc}</div>
+          </div>
+          <div class="phase-count">${done}/${total}</div>
+          <svg class="chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="phase-body">
+          ${phase.tasks.map(t => `
+            <div class="task ${state[t.id] ? 'done':''}" data-task="${t.id}">
+              <div class="task-check" data-check="${t.id}">${state[t.id] ? CHECK_SVG : ''}</div>
+              <div class="task-text">
+                <div class="task-title">${t.title}</div>
+                ${t.note ? `<div class="task-note">${t.note}</div>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    route.appendChild(phaseEl);
+  });
+
+  document.getElementById('overallCount').textContent = `${doneAll}/${totalAll}`;
+  const pct = totalAll ? Math.round((doneAll/totalAll)*100) : 0;
+  document.getElementById('overallPct').textContent = pct + '%';
+  document.getElementById('overallFill').style.width = pct + '%';
+
+  // wire events
+  route.querySelectorAll('[data-toggle]').forEach(el => {
+    el.addEventListener('click', () => {
+      el.closest('.phase').classList.toggle('collapsed');
+    });
+  });
+  route.querySelectorAll('[data-check]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = el.dataset.check;
+      setTaskState(id, !state[id]);
+      render();
+    });
+  });
+}
+
+function renderBudget(){
+  const tbl = document.getElementById('budgetTable');
+  let total = 0;
+  tbl.innerHTML = budget.map(([name, amt]) => {
+    total += amt;
+    return `<tr><td>${name}</td><td>${fmt(amt)}</td></tr>`;
+  }).join('') + `<tr class="total"><td>Итого</td><td>${fmt(total)}</td></tr>`;
+}
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if(!confirm('Сбросить все отметки?')) return;
+  const allIds = phases.flatMap(p => p.tasks.map(t => t.id));
+  allIds.forEach(id => setTaskState(id, false));
+  render();
+});
+
+(function init(){
+  loadState();
+  render();
+  renderBudget();
+})();
+</script>
+</body>
+</html>
