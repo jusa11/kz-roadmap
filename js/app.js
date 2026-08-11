@@ -445,4 +445,12 @@ let phases = [];
 
       render(); // первичная отрисовка пустым состоянием, пока грузится Firestore
       renderBudget();
+      const scrollTopBtn = document.getElementById('scrollTopBtn');
+      const updateScrollTopButton = () => {
+        scrollTopBtn.classList.toggle('is-visible', window.scrollY > 300);
+      };
+      window.addEventListener('scroll', updateScrollTopButton, { passive: true });
+      scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      updateScrollTopButton();
+
       initFirestore();

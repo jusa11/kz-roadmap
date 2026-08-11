@@ -31,10 +31,46 @@
         -webkit-font-smoothing: antialiased;
         padding: 0 0 80px 0;
       }
+      .scroll-top {
+        position: fixed;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        width: 38px;
+        height: 100vh;
+        border: 0;
+        border-left: 1px solid transparent;
+        background: transparent;
+        color: var(--teal-deep);
+        cursor: pointer;
+        opacity: 0;
+        pointer-events: none;
+        transition: background .2s ease, border-color .2s ease, color .2s ease, opacity .2s ease;
+      }
+      .scroll-top span {
+        display: block;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 22px;
+        transform: translateY(-50%);
+      }
+      .scroll-top.is-visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .scroll-top:hover,
+      .scroll-top:focus-visible {
+        background: rgba(251, 248, 241, .88);
+        border-left-color: var(--card-line);
+        color: var(--teal);
+        outline: none;
+      }
       .wrap {
         max-width: 880px;
         margin: 0 auto;
         padding: 40px 22px 0;
+      }
+      @media (max-width: 620px) {
+        .scroll-top { width: 34px; }
       }
 
       /* ---------- Header ---------- */
