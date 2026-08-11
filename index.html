@@ -183,6 +183,24 @@
   .task.done .task-title{ color: var(--ink-faint); text-decoration: line-through; text-decoration-color: var(--ink-faint); }
   .task-note{ font-size: 13px; color: var(--ink-soft); margin-top:2px; }
   .task-note a{ color: var(--teal-deep); }
+
+  .task-due-row{ display:flex; align-items:center; gap:8px; margin-top:6px; }
+  .due-badge{
+    font-family:'IBM Plex Mono', monospace; font-size:12px;
+    padding:2px 8px; border-radius:999px;
+    border:1px solid var(--card-line); color:var(--ink-soft); background:var(--bg-deep);
+    white-space:nowrap;
+  }
+  .due-badge.overdue{ border-color:#C4523F; color:#A5402F; background:rgba(196,82,63,0.1); }
+  .due-badge.soon{ border-color:var(--gold); color:var(--gold); background:rgba(192,138,23,0.1); }
+  .due-badge.none{ color:var(--ink-faint); border-style:dashed; }
+  .task.done .due-badge{ opacity:.55; }
+  .due-input{
+    font-family:'Work Sans', sans-serif; font-size:12px; color:var(--ink-soft);
+    border:1px solid var(--card-line); background:#fff; border-radius:7px;
+    padding:2px 6px; cursor:pointer;
+  }
+  .due-input:hover{ border-color:var(--teal); }
   .task-tag{
     font-family:'IBM Plex Mono', monospace;
     font-size:11px; color: var(--gold); background: rgba(192,138,23,0.12);
@@ -432,6 +450,34 @@ function setTaskState(id, val){
   }
 }
 
+function setDue(id, dateStr){
+  const key = id + '__due';
+  state[key] = dateStr;
+  if(firestoreReady){
+    setDoc(stateDocRef, { [key]: dateStr }, { merge: true })
+      .catch(e => console.error('firestore write error', e));
+  }else{
+    try{ localStorage.setItem('kz-roadmap-state-v1', JSON.stringify(state)); }
+    catch(e){ console.error('storage write error', e); }
+  }
+}
+
+function dueStatus(dateStr, done){
+  if(!dateStr) return 'none';
+  if(done) return 'done-neutral';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const due = new Date(dateStr + 'T00:00:00');
+  const diffDays = Math.round((due - today) / 86400000);
+  if(diffDays < 0) return 'overdue';
+  if(diffDays <= 5) return 'soon';
+  return 'ok';
+}
+
+function formatDue(dateStr){
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'short' });
+}
+
 function render(){
   const route = document.getElementById('route');
   route.innerHTML = '';
@@ -461,15 +507,26 @@ function render(){
           <svg class="chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
         <div class="phase-body">
-          ${phase.tasks.map(t => `
+          ${phase.tasks.map(t => {
+            const due = state[t.id + '__due'] || '';
+            const st = dueStatus(due, !!state[t.id]);
+            const badgeClass = (st === 'done-neutral') ? 'none' : st;
+            const badgeLabel = due
+              ? (st === 'overdue' ? `Просрочено · ${formatDue(due)}` : formatDue(due))
+              : '';
+            return `
             <div class="task ${state[t.id] ? 'done':''}" data-task="${t.id}">
               <div class="task-check" data-check="${t.id}">${state[t.id] ? CHECK_SVG : ''}</div>
               <div class="task-text">
                 <div class="task-title">${t.title}</div>
                 ${t.note ? `<div class="task-note">${t.note}</div>` : ''}
+                <div class="task-due-row">
+                  ${due ? `<span class="due-badge ${badgeClass}">${badgeLabel}</span>` : ''}
+                  <input type="date" class="due-input" data-due="${t.id}" value="${due}" title="Установить срок">
+                </div>
               </div>
             </div>
-          `).join('')}
+          `;}).join('')}
         </div>
       </div>
     `;
@@ -492,6 +549,15 @@ function render(){
       e.stopPropagation();
       const id = el.dataset.check;
       setTaskState(id, !state[id]);
+      render();
+    });
+  });
+  route.querySelectorAll('[data-due]').forEach(el => {
+    el.addEventListener('click', (e) => e.stopPropagation());
+    el.addEventListener('change', (e) => {
+      e.stopPropagation();
+      const id = el.dataset.due;
+      setDue(id, el.value);
       render();
     });
   });
