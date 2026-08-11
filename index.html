@@ -238,12 +238,29 @@
   </div>
 
   <footer>
-    Данные хранятся только у вас в браузере · <button class="reset-btn" id="resetBtn">Сбросить все отметки</button>
+    Отметки видны всем, у кого есть ссылка · <button class="reset-btn" id="resetBtn">Сбросить все отметки</button>
   </footer>
 
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+// ====== НАСТРОЙКА FIREBASE ======
+const firebaseConfig = {
+  apiKey: "AIzaSyB9cOdbAyvlJyX2xXvxKET-pyt3OxhGjqk",
+  authDomain: "kz-roadmap.firebaseapp.com",
+  projectId: "kz-roadmap",
+  storageBucket: "kz-roadmap.firebasestorage.app",
+  messagingSenderId: "54403974618",
+  appId: "1:54403974618:web:01a324928f9ba12a3f6ce3"
+};
+const app = initializeApp(firebaseConfig);
+const dbFs = getFirestore(app);
+const stateDocRef = doc(dbFs, "kz-roadmap", "state");
+// ==================================
+
 const CHECK_SVG = '<svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 const phases = [
@@ -371,22 +388,48 @@ const budget = [
   ['Ехать на поезде до РП', 30000],
 ];
 
-const STORAGE_KEY = 'kz-roadmap-state-v1';
 let state = {};
+let firestoreReady = false;
 
 function fmt(n){ return n.toLocaleString('ru-RU') + ' ₽'; }
 
-function loadState(){
+function loadLocalState(){
   try{
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem('kz-roadmap-state-v1');
     state = raw ? JSON.parse(raw) : {};
-  }catch(e){ console.error('storage read error', e); state = {}; }
+  }catch(e){ state = {}; }
+}
+
+function initFirestore(){
+  try{
+    // слушаем изменения в реальном времени — от себя и от других людей
+    onSnapshot(stateDocRef, (snap) => {
+      firestoreReady = true;
+      state = snap.exists() ? snap.data() : {};
+      render();
+    }, (err) => {
+      console.error('Firestore listen failed, falling back to localStorage', err);
+      firestoreReady = false;
+      loadLocalState();
+      render();
+    });
+  }catch(e){
+    console.error('Firestore init failed, falling back to localStorage', e);
+    firestoreReady = false;
+    loadLocalState();
+  }
 }
 
 function setTaskState(id, val){
   state[id] = val;
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-  catch(e){ console.error('storage write error', e); }
+  if(firestoreReady){
+    setDoc(stateDocRef, { [id]: val }, { merge: true })
+      .catch(e => console.error('firestore write error', e));
+    // render() придёт через onSnapshot выше
+  }else{
+    try{ localStorage.setItem('kz-roadmap-state-v1', JSON.stringify(state)); }
+    catch(e){ console.error('storage write error', e); }
+  }
 }
 
 function render(){
@@ -464,17 +507,19 @@ function renderBudget(){
 }
 
 document.getElementById('resetBtn').addEventListener('click', () => {
-  if(!confirm('Сбросить все отметки?')) return;
-  const allIds = phases.flatMap(p => p.tasks.map(t => t.id));
-  allIds.forEach(id => setTaskState(id, false));
-  render();
+  if(!confirm('Сбросить все отметки у всех?')) return;
+  if(firestoreReady){
+    setDoc(stateDocRef, {}).catch(e => console.error('firestore reset error', e));
+  }else{
+    state = {};
+    try{ localStorage.setItem('kz-roadmap-state-v1', JSON.stringify(state)); }catch(e){}
+    render();
+  }
 });
 
-(function init(){
-  loadState();
-  render();
-  renderBudget();
-})();
+render(); // первичная отрисовка пустым состоянием, пока грузится Firestore
+renderBudget();
+initFirestore();
 </script>
 </body>
 </html>
