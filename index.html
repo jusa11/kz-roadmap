@@ -139,6 +139,11 @@
     margin:0;
   }
   .phase-desc{ font-size: 13.5px; color: var(--ink-faint); margin-top:2px; }
+  .phase-deadline{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px; color:var(--ink-soft); margin-top:7px;
+  }
+  .phase-deadline .due-badge{ display:inline-block; }
   .phase-count{
     font-family:'IBM Plex Mono', monospace;
     font-size:13px; color: var(--ink-soft);
@@ -486,6 +491,13 @@ function render(){
   phases.forEach((phase, idx) => {
     const total = phase.tasks.length;
     const done = phase.tasks.filter(t => state[t.id]).length;
+    const phaseDue = phase.tasks
+      .map(t => state[t.id + '__due'])
+      .filter(Boolean)
+      .sort()
+      .at(-1) || '';
+    const phaseDueStatus = dueStatus(phaseDue, done === total);
+    const phaseDueClass = phaseDueStatus === 'done-neutral' ? 'none' : phaseDueStatus;
     totalAll += total; doneAll += done;
 
     const phaseEl = document.createElement('div');
@@ -502,6 +514,9 @@ function render(){
           <div class="phase-titles">
             <p class="phase-title">${phase.title}</p>
             <div class="phase-desc">${phase.desc}</div>
+            <div class="phase-deadline">Общий срок: ${phaseDue
+              ? `<span class="due-badge ${phaseDueClass}">${formatDue(phaseDue)}</span>`
+              : '<span class="due-badge none">не задан</span>'}</div>
           </div>
           <div class="phase-count">${done}/${total}</div>
           <svg class="chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
