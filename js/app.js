@@ -60,6 +60,28 @@ let phases = [];
         saveCustomData('__budget', entries);
       }
 
+      function getIncome() {
+        return state.__income || [];
+      }
+
+      function saveIncome(entries) {
+        saveCustomData('__income', entries);
+      }
+
+      function getCustomIncomeTables() {
+        return state.__incomeTables || [];
+      }
+
+      function saveCustomIncomeTables(tables) {
+        saveCustomData('__incomeTables', tables);
+      }
+
+      function renderDefaultTableVisibility() {
+        const hiddenTables = state.__hiddenDefaultTables || [];
+        document.getElementById('budgetCard').hidden = hiddenTables.includes('budget');
+        document.getElementById('incomeCard').hidden = hiddenTables.includes('income');
+      }
+
       function loadLocalState() {
         try {
           const raw = localStorage.getItem('kz-roadmap-state-v1');
@@ -79,6 +101,9 @@ let phases = [];
               state = snap.exists() ? snap.data() : {};
               render();
               renderBudget();
+              renderIncome();
+              renderCustomIncomeTables();
+              renderDefaultTableVisibility();
             },
             (err) => {
               console.error('Firestore listen failed, falling back to localStorage', err);
@@ -86,6 +111,9 @@ let phases = [];
               loadLocalState();
               render();
               renderBudget();
+              renderIncome();
+              renderCustomIncomeTables();
+              renderDefaultTableVisibility();
             },
           );
         } catch (e) {
@@ -93,6 +121,9 @@ let phases = [];
           firestoreReady = false;
           loadLocalState();
           renderBudget();
+          renderIncome();
+          renderCustomIncomeTables();
+          renderDefaultTableVisibility();
         }
       }
 
@@ -397,6 +428,148 @@ let phases = [];
         });
       }
 
+      function renderIncome() {
+        const tbl = document.getElementById('incomeTable');
+        const entries = getIncome();
+        const total = entries.reduce((sum, entry) => sum + (Number(entry.amount) || 0), 0);
+        tbl.innerHTML = `
+          <thead><tr><th>№</th><th>Источник дохода</th><th>Сумма</th><th></th></tr></thead>
+          <tbody>
+            ${entries
+              .map(
+                (entry, index) => `
+                  <tr>
+                    <td>${index + 1}</td>
+                    <td><input class="budget-input" data-income-field="name" data-income-id="${entry.id}" value="${escapeHtml(entry.name)}" aria-label="Источник дохода ${index + 1}"></td>
+                    <td><input class="budget-input amount" data-income-field="amount" data-income-id="${entry.id}" type="number" min="0" step="1" value="${Number(entry.amount) || 0}" aria-label="Сумма дохода ${index + 1}"></td>
+                    <td><button class="delete-btn" type="button" data-delete-income="${entry.id}" title="Удалить запись" aria-label="Удалить запись">×</button></td>
+                  </tr>`,
+              )
+              .join('')}
+            <tr class="total"><td colspan="2">Итого</td><td id="incomeTotal">${fmt(total)}</td><td></td></tr>
+          </tbody>`;
+
+        tbl.querySelectorAll('[data-income-field]').forEach((input) => {
+          input.addEventListener('input', () => {
+            const liveTotal = [...tbl.querySelectorAll('[data-income-field="amount"]')].reduce(
+              (sum, field) => sum + (Number(field.value) || 0),
+              0,
+            );
+            document.getElementById('incomeTotal').textContent = fmt(liveTotal);
+          });
+          input.addEventListener('change', () => {
+            const updated = entries.map((entry) => {
+              if (entry.id !== input.dataset.incomeId) return entry;
+              return input.dataset.incomeField === 'amount'
+                ? { ...entry, amount: Math.max(0, Number(input.value) || 0) }
+                : { ...entry, name: input.value.trim() || 'Без названия' };
+            });
+            saveIncome(updated);
+            renderIncome();
+          });
+        });
+        tbl.querySelectorAll('[data-delete-income]').forEach((button) => {
+          button.addEventListener('click', () => {
+            if (!confirm('Удалить этот источник дохода?')) return;
+            saveIncome(entries.filter((entry) => entry.id !== button.dataset.deleteIncome));
+            renderIncome();
+          });
+        });
+      }
+
+      function renderCustomIncomeTables() {
+        const container = document.getElementById('customIncomeTables');
+        const tables = getCustomIncomeTables();
+        container.innerHTML = tables
+          .map(
+            (table) => `
+              <div class="ref-card income-card" data-income-table="${table.id}">
+                <div class="income-table-heading">
+                  <div class="ref-title">${escapeHtml(table.title)}</div>
+                  <button class="delete-btn" type="button" data-delete-income-table="${table.id}" title="Удалить таблицу" aria-label="Удалить таблицу">×</button>
+                </div>
+                <div class="ref-sub">Добавляйте источники дохода — общая сумма обновится автоматически.</div>
+                <table class="budget"></table>
+                <form class="budget-add" data-add-custom-income="${table.id}">
+                  <input name="name" type="text" placeholder="Источник дохода" required>
+                  <input name="amount" type="number" min="0" step="1" placeholder="Сумма" required>
+                  <button class="add-btn" type="submit">Добавить</button>
+                </form>
+              </div>`,
+          )
+          .join('');
+
+        tables.forEach((table) => {
+          const card = container.querySelector(`[data-income-table="${table.id}"]`);
+          const tbl = card.querySelector('table');
+          const entries = table.entries || [];
+          const total = entries.reduce((sum, entry) => sum + (Number(entry.amount) || 0), 0);
+          tbl.innerHTML = `
+            <thead><tr><th>№</th><th>Источник дохода</th><th>Сумма</th><th></th></tr></thead>
+            <tbody>
+              ${entries
+                .map(
+                  (entry, index) => `
+                    <tr>
+                      <td>${index + 1}</td>
+                      <td><input class="budget-input" data-custom-income-field="name" data-income-id="${entry.id}" value="${escapeHtml(entry.name)}" aria-label="Источник дохода ${index + 1}"></td>
+                      <td><input class="budget-input amount" data-custom-income-field="amount" data-income-id="${entry.id}" type="number" min="0" step="1" value="${Number(entry.amount) || 0}" aria-label="Сумма дохода ${index + 1}"></td>
+                      <td><button class="delete-btn" type="button" data-delete-custom-income="${entry.id}" title="Удалить запись" aria-label="Удалить запись">×</button></td>
+                    </tr>`,
+                )
+                .join('')}
+              <tr class="total"><td colspan="2">Итого</td><td class="custom-income-total">${fmt(total)}</td><td></td></tr>
+            </tbody>`;
+
+          const saveEntries = (updatedEntries) => {
+            saveCustomIncomeTables(
+              getCustomIncomeTables().map((item) => (item.id === table.id ? { ...item, entries: updatedEntries } : item)),
+            );
+            renderCustomIncomeTables();
+          };
+          tbl.querySelectorAll('[data-custom-income-field]').forEach((input) => {
+            input.addEventListener('input', () => {
+              const liveTotal = [...tbl.querySelectorAll('[data-custom-income-field="amount"]')].reduce(
+                (sum, field) => sum + (Number(field.value) || 0),
+                0,
+              );
+              tbl.querySelector('.custom-income-total').textContent = fmt(liveTotal);
+            });
+            input.addEventListener('change', () => {
+              saveEntries(
+                entries.map((entry) => {
+                  if (entry.id !== input.dataset.incomeId) return entry;
+                  return input.dataset.customIncomeField === 'amount'
+                    ? { ...entry, amount: Math.max(0, Number(input.value) || 0) }
+                    : { ...entry, name: input.value.trim() || 'Без названия' };
+                }),
+              );
+            });
+          });
+          tbl.querySelectorAll('[data-delete-custom-income]').forEach((button) => {
+            button.addEventListener('click', () => {
+              if (!confirm('Удалить этот источник дохода?')) return;
+              saveEntries(entries.filter((entry) => entry.id !== button.dataset.deleteCustomIncome));
+            });
+          });
+          card.querySelector('[data-add-custom-income]').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const form = e.currentTarget;
+            const name = form.elements.name.value.trim();
+            if (!name) return;
+            saveEntries([...entries, { id: makeId('income'), name, amount: Math.max(0, Number(form.elements.amount.value) || 0) }]);
+          });
+        });
+
+        container.querySelectorAll('[data-delete-income-table]').forEach((button) => {
+          button.addEventListener('click', () => {
+            if (!confirm('Удалить эту таблицу доходов вместе со всеми записями?')) return;
+            saveCustomIncomeTables(getCustomIncomeTables().filter((table) => table.id !== button.dataset.deleteIncomeTable));
+            renderCustomIncomeTables();
+          });
+        });
+      }
+
       document.getElementById('resetBtn').addEventListener('click', () => {
         if (!confirm('Сбросить все отметки у всех?')) return;
         if (firestoreReady) {
@@ -443,8 +616,50 @@ let phases = [];
         renderBudget();
       });
 
+      document.getElementById('incomeAddForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const name = form.elements.name.value.trim();
+        if (!name) return;
+        saveIncome([
+          ...getIncome(),
+          { id: makeId('income'), name, amount: Math.max(0, Number(form.elements.amount.value) || 0) },
+        ]);
+        form.reset();
+        renderIncome();
+      });
+
+      document.getElementById('addIncomeTableBtn').addEventListener('click', () => {
+        const form = document.getElementById('incomeTableForm');
+        form.classList.toggle('open');
+        if (form.classList.contains('open')) form.elements.title.focus();
+      });
+      document.getElementById('incomeTableForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const form = e.currentTarget;
+        const title = form.elements.title.value.trim();
+        if (!title) return;
+        saveCustomIncomeTables([...getCustomIncomeTables(), { id: makeId('income_table'), title, entries: [] }]);
+        form.reset();
+        form.classList.remove('open');
+        renderCustomIncomeTables();
+      });
+
+      document.querySelectorAll('[data-delete-default-table]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const tableType = button.dataset.deleteDefaultTable;
+          const tableName = tableType === 'budget' ? 'таблицу трат' : 'таблицу доходов';
+          if (!confirm(`Удалить ${tableName}? Записи останутся сохранены.`)) return;
+          saveCustomData('__hiddenDefaultTables', [...new Set([...(state.__hiddenDefaultTables || []), tableType])]);
+          renderDefaultTableVisibility();
+        });
+      });
+
       render(); // первичная отрисовка пустым состоянием, пока грузится Firestore
       renderBudget();
+      renderIncome();
+      renderCustomIncomeTables();
+      renderDefaultTableVisibility();
       const scrollTopBtn = document.getElementById('scrollTopBtn');
       const updateScrollTopButton = () => {
         scrollTopBtn.classList.toggle('is-visible', window.scrollY > 300);

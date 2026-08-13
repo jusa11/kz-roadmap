@@ -37,8 +37,11 @@
 
       <div class="route" id="route"></div>
 
-      <div class="ref-card">
-        <div class="ref-title">Список возможных трат</div>
+      <div class="ref-card" id="budgetCard">
+        <div class="income-table-heading">
+          <div class="ref-title">Список возможных трат</div>
+          <button class="delete-btn" type="button" data-delete-default-table="budget" title="Удалить таблицу" aria-label="Удалить таблицу">×</button>
+        </div>
         <div class="ref-sub">Редактируйте записи — итоговая сумма пересчитывается автоматически.</div>
         <table class="budget" id="budgetTable"></table>
         <form class="budget-add" id="budgetAddForm">
@@ -50,6 +53,29 @@
           Без учёта пунктов без указанной суммы («сняться с воинского учёта», «доверенности» — вынесены в чек-лист
           выше).
         </div>
+      </div>
+
+      <div class="ref-card income-card" id="incomeCard">
+        <div class="income-table-heading">
+          <div class="ref-title">Доходы</div>
+          <button class="delete-btn" type="button" data-delete-default-table="income" title="Удалить таблицу" aria-label="Удалить таблицу">×</button>
+        </div>
+        <div class="ref-sub">Добавляйте свои источники дохода — общая сумма обновится автоматически.</div>
+        <table class="budget" id="incomeTable"></table>
+        <form class="budget-add" id="incomeAddForm">
+          <input name="name" type="text" placeholder="Источник дохода" required>
+          <input name="amount" type="number" min="0" step="1" placeholder="Сумма" required>
+          <button class="add-btn" type="submit">Добавить</button>
+        </form>
+      </div>
+
+      <div class="income-tables" id="customIncomeTables"></div>
+      <div class="income-table-controls">
+        <button class="add-btn secondary" id="addIncomeTableBtn" type="button">+ Добавить таблицу доходов</button>
+        <form class="add-form income-table-form" id="incomeTableForm">
+          <input name="title" type="text" placeholder="Название таблицы" required>
+          <button class="add-btn" type="submit">Добавить таблицу</button>
+        </form>
       </div>
 
       <footer>

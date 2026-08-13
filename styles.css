@@ -505,6 +505,25 @@
         padding: 20px 22px;
         margin-top: 8px;
       }
+      .income-card {
+        margin-top: 18px;
+      }
+      .income-tables .income-card {
+        margin-top: 18px;
+      }
+      .income-table-controls {
+        margin: 18px 0 0 42px;
+      }
+      .income-table-form {
+        margin-top: 10px;
+        grid-template-columns: minmax(0, 1fr) auto;
+      }
+      .income-table-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
       .ref-title {
         font-family: 'Newsreader', serif;
         font-size: 20px;
