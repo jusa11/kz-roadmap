@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ипотека — проверка квартиры</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        color: #222;
+        line-height: 1.5;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 20px 80px;
+      }
+
+      header {
+        margin-bottom: 30px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 32px;
+      }
+
+      .subtitle {
+        color: #666;
+        margin: 0;
+      }
+
+      .progress-wrapper {
+        position: sticky;
+        top: 15px;
+        z-index: 10;
+        background: white;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      }
+
+      .progress-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #555;
+      }
+
+      .progress-bar {
+        height: 8px;
+        background: #e5e5e5;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .progress {
+        height: 100%;
+        width: 0;
+        background: #222;
+        transition: width 0.2s ease;
+      }
+
+      section {
+        background: white;
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      section.danger {
+        border-left: 4px solid #d33;
+      }
+
+      h2 {
+        margin: 0 0 18px;
+        font-size: 21px;
+      }
+
+      h3 {
+        font-size: 16px;
+        margin: 20px 0 10px;
+      }
+
+      .checklist {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+
+      label {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        cursor: pointer;
+        padding: 5px 0;
+      }
+
+      input[type='checkbox'] {
+        width: 18px;
+        height: 18px;
+        margin-top: 3px;
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+
+      input[type='checkbox']:checked + span {
+        color: #888;
+        text-decoration: line-through;
+      }
+
+      .note {
+        background: #f7f7f7;
+        border-radius: 8px;
+        padding: 12px 14px;
+        margin-top: 15px;
+        font-size: 14px;
+        color: #555;
+      }
+
+      .warning {
+        background: #fff3f3;
+        border-radius: 8px;
+        padding: 14px;
+        margin-top: 15px;
+        color: #8a2222;
+        font-size: 14px;
+      }
+
+      .important {
+        font-weight: 600;
+      }
+
+      .footer-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-top: 25px;
+      }
+
+      button {
+        border: none;
+        background: #222;
+        color: white;
+        padding: 11px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      button:hover {
+        background: #444;
+      }
+
+      button.secondary {
+        background: #e8e8e8;
+        color: #222;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 25px 12px 50px;
+        }
+
+        h1 {
+          font-size: 26px;
+        }
+
+        section {
+          padding: 18px;
+        }
+
+        .footer-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <header>
+        <h1>🏠 Ипотека — проверка квартиры</h1>
+        <p class="subtitle">Чек-лист проверки квартиры перед покупкой</p>
+      </header>
+
+      <!-- ПРОГРЕСС -->
+      <div class="progress-wrapper">
+        <div class="progress-info">
+          <span>Прогресс проверки</span>
+          <strong id="progressText">0%</strong>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress" id="progressBar"></div>
+        </div>
+      </div>
+
+      <!-- 1 -->
+      <section>
+        <h2>1. 👤 Собственники</h2>
+
+        <div class="checklist">
+          <label>
+            <input type="checkbox" />
+            <span>Узнать количество собственников</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Узнать доли каждого собственника</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Получить ФИО и дату рождения каждого собственника</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Сверить собственников с данными в ЕГРН</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить наличие несовершеннолетних собственников</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить, кто будет подписывать договор</span>
+          </label>
+        </div>
+
+        <h3>Документы</h3>
+
+        <div class="checklist">
+          <label>
+            <input type="checkbox" />
+            <span>Паспорт каждого собственника</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Свежая выписка из ЕГРН</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- 2 -->
+      <section>
+        <h2>2. 📄 Основание права собственности</h2>
+
+        <div class="checklist">
+          <label>
+            <input type="checkbox" />
+            <span>Получить документ, на основании которого возникло право собственности</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Определить дату приобретения квартиры</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить, кто приобрёл квартиру</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить соответствие документа данным ЕГРН</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить соответствие адреса и площади</span>
+          </label>
+        </div>
+
+        <div class="note">
+          <strong>Документ может быть:</strong>
+          договор купли-продажи, ДДУ, уступка, дарение, приватизация, свидетельство о праве на наследство и т. д.
+        </div>
+      </section>
+
+      <!-- 3 -->
+      <section>
+        <h2>3. 📑 Выписка из ЕГРН</h2>
+
+        <div class="checklist">
+          <label>
+            <input type="checkbox" />
+            <span>Проверить собственников</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить доли</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить площадь</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить кадастровый номер</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить вид права</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить обременения</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить аресты и запреты</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить ипотеку</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить другие ограничения</span>
+          </label>
+        </div>
+
+        <div class="warning">
+          Если в ЕГРН обнаружено обременение или запрет —
+          <strong>не вносить задаток, пока не разберёмся, что это означает.</strong>
+        </div>
+      </section>
+
+      <!-- 4 -->
+      <section>
+        <h2>4. 💍 Семейное положение</h2>
+
+        <div class="checklist">
+          <label>
+            <input type="checkbox" />
+            <span>Определить семейное положение собственника</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Выяснить, состоял ли собственник в браке на момент приобретения квартиры</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Определить, является ли квартира совместным имуществом супругов</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Определить, требуется ли согласие супруга</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Получить нотариальное согласие супруга, если оно требуется</span>
+          </label>
+        </div>
+
+        <div class="note">
+          Важно: если квартира оформлена только на одного супруга, это ещё не означает, что второй супруг не имеет прав
+          на неё.
+        </div>
+      </section>
+
+      <!-- 5 -->
+      <section>
+        <h2>5. 👶 Дети и материнский капитал</h2>
+
+        <div class="checklist">
+          <label>
+            <input type="checkbox" />
+            <span>Проверить наличие несовершеннолетних собственников</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Узнать, есть ли несовершеннолетние дети у продавца</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Узнать, использовался ли материнский капитал</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Если использовался — проверить выделение долей детям</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить необходимость разрешения органов опеки</span>
+          </label>
+        </div>
+
+        <div class="warning">
+          Если использовался материнский капитал, а доли детям не были выделены —
+          <strong>остановить сделку до выяснения ситуации.</strong>
+        </div>
+      </section>
+
+      <!-- 6 -->
+      <section>
+        <h2>6. 🏠 Зарегистрированные в квартире</h2>
+
+        <div class="checklist">
+          <label>
+            <input type="checkbox" />
+            <span>Узнать, кто зарегистрирован в квартире</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить наличие несовершеннолетних зарегистрированных</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Получить справку о зарегистрированных лицах</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Договориться о сроках снятия с регистрации</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Перед сделкой получить актуальную справку</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- 7 -->
+      <section>
+        <h2>7. 💰 Задолженности</h2>
+
+        <div class="checklist">
+          <label>
+            <input type="checkbox" />
+            <span>Проверить задолженность по коммунальным платежам</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить электричество</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить воду / газ</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить задолженность по капитальному ремонту</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Получить справку об отсутствии задолженности</span>
+          </label>
+        </div>
+
+        <div class="note">Капремонт стоит проверять отдельно.</div>
+      </section>
+
+      <!-- 8 -->
+      <section>
+        <h2>8. ⚖️ Проверка продавца</h2>
+
+        <div class="checklist">
+          <label>
+            <input type="checkbox" />
+            <span>Проверить судебные дела</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить исполнительные производства</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить банкротство</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить наличие крупных долгов</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Оценить другие обстоятельства, которые могут повлиять на сделку</span>
+          </label>
+        </div>
+
+        <div class="note">Проверять каждого собственника отдельно.</div>
+      </section>
+
+      <!-- 9 -->
+      <section>
+        <h2>9. 📝 Доверенность</h2>
+
+        <div class="checklist">
+          <label>
+            <input type="checkbox" />
+            <span>Проверить, продаёт ли квартиру сам собственник</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Если действует представитель — получить доверенность</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить срок действия доверенности</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить полномочия представителя</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить право представителя подписывать договор и совершать расчёты</span>
+          </label>
+        </div>
+
+        <div class="note">
+          Сам факт продажи по доверенности не означает мошенничество, но такую сделку нужно проверять внимательнее.
+        </div>
+      </section>
+
+      <!-- 10 -->
+      <section>
+        <h2>10. 🏗️ Сама квартира и дом</h2>
+
+        <div class="checklist">
+          <label>
+            <input type="checkbox" />
+            <span>Проверить отсутствие незаконной перепланировки</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Сверить фактическую планировку с документами</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить электрику</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить сантехнику</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить отопление</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить окна</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить вентиляцию</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить плесень и сырость</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Оценить состояние дома и подъезда</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить подвал / крышу в зависимости от этажа</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить капитальный ремонт</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить аварийность дома</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- 11 -->
+      <section>
+        <h2>11. 🔄 История квартиры</h2>
+
+        <div class="checklist">
+          <label>
+            <input type="checkbox" />
+            <span>Проверить предыдущих собственников</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить даты переходов права собственности</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить основания предыдущих сделок</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Обратить внимание на частые перепродажи</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить наследование</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить дарение</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проверить сделки по доверенности</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Выяснить причины подозрительно быстрых перепродаж</span>
+          </label>
+        </div>
+
+        <div class="warning">
+          Частые переходы права собственности сами по себе не означают проблему, но требуют дополнительного выяснения
+          обстоятельств.
+        </div>
+      </section>
+
+      <!-- 12 -->
+      <section>
+        <h2>12. 🏦 Проверка банком</h2>
+
+        <div class="checklist">
+          <label>
+            <input type="checkbox" />
+            <span>Подать квартиру на одобрение банку</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Получить результаты проверки объекта банком</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Уточнить требования банка к документам продавца</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Получить окончательное одобрение объекта</span>
+          </label>
+        </div>
+
+        <div class="note">
+          <strong>Важно:</strong> одобрение квартиры банком не является абсолютной гарантией юридической безопасности
+          сделки для покупателя.
+        </div>
+      </section>
+
+      <!-- ОПАСНО -->
+      <section class="danger">
+        <h2>🚨 Стоп-сигналы</h2>
+
+        <div class="checklist">
+          <label>
+            <input type="checkbox" />
+            <span>Непонятное происхождение права собственности</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Проблемы с наследством</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Маткапитал использовался, но доли детям не выделены</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Арест или запрет регистрационных действий</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Серьёзные проблемы с банкротством продавца</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Подозрительная история перепродаж</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Продавец не является собственником и непонятно, на каком основании действует</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Продавец отказывается предоставлять документы</span>
+          </label>
+
+          <label>
+            <input type="checkbox" />
+            <span>Документы противоречат друг другу</span>
+          </label>
+        </div>
+
+        <div class="warning">
+          <strong
+            >При наличии серьёзного стоп-сигнала не вносить задаток и не переводить деньги, пока ситуация не будет
+            выяснена.</strong
+          >
+        </div>
+      </section>
+
+      <!-- ACTIONS -->
+      <div class="footer-actions">
+        <span id="checkedCount">Выполнено: 0</span>
+
+        <button class="secondary" onclick="resetChecklist()">Сбросить чек-лист</button>
+      </div>
+    </div>
+
+    <script>
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+      const checkedCount = document.getElementById('checkedCount');
+
+      // Загружаем сохранённое состояние
+      checkboxes.forEach((checkbox, index) => {
+        const saved = localStorage.getItem(`mortgage-check-${index}`);
+
+        if (saved === 'true') {
+          checkbox.checked = true;
+        }
+
+        checkbox.addEventListener('change', () => {
+          localStorage.setItem(`mortgage-check-${index}`, checkbox.checked);
+
+          updateProgress();
+        });
+      });
+
+      function updateProgress() {
+        const total = checkboxes.length;
+
+        const checked = [...checkboxes].filter((checkbox) => checkbox.checked).length;
+
+        const percent = total ? Math.round((checked / total) * 100) : 0;
+
+        progressBar.style.width = `${percent}%`;
+        progressText.textContent = `${percent}%`;
+        checkedCount.textContent = `Выполнено: ${checked} из ${total}`;
+      }
+
+      function resetChecklist() {
+        const confirmed = confirm('Сбросить весь прогресс проверки?');
+
+        if (!confirmed) return;
+
+        checkboxes.forEach((checkbox, index) => {
+          checkbox.checked = false;
+          localStorage.removeItem(`mortgage-check-${index}`);
+        });
+
+        updateProgress();
+      }
+
+      updateProgress();
+    </script>
+  </body>
+</html>

@@ -16,6 +16,7 @@
     <div class="wrap">
       <header>
         <div class="eyebrow"><span class="dot"></span>ROADMAP · РФ → КАЗАХСТАН</div>
+        <a href="./flat.html">Покупка квартиры</a>
         <h1>Дорога в Казахстан</h1>
         <div class="subtitle">
           Все дела по переезду, собранные в один маршрут — от сборов до легализации. Отмечайте сделанное, прогресс
@@ -28,8 +29,8 @@
         <div class="add-category">
           <button class="add-btn" type="button" data-form-toggle="addPhaseForm">+ Добавить категорию</button>
           <form class="add-form" id="addPhaseForm">
-            <input name="title" type="text" placeholder="Название категории" required>
-            <input name="desc" type="text" placeholder="Краткое описание (необязательно)">
+            <input name="title" type="text" placeholder="Название категории" required />
+            <input name="desc" type="text" placeholder="Краткое описание (необязательно)" />
             <button class="add-btn" type="submit">Добавить</button>
           </form>
         </div>
@@ -40,13 +41,21 @@
       <div class="ref-card" id="budgetCard">
         <div class="income-table-heading">
           <div class="ref-title">Список возможных трат</div>
-          <button class="delete-btn" type="button" data-delete-default-table="budget" title="Удалить таблицу" aria-label="Удалить таблицу">×</button>
+          <button
+            class="delete-btn"
+            type="button"
+            data-delete-default-table="budget"
+            title="Удалить таблицу"
+            aria-label="Удалить таблицу"
+          >
+            ×
+          </button>
         </div>
         <div class="ref-sub">Редактируйте записи — итоговая сумма пересчитывается автоматически.</div>
         <table class="budget" id="budgetTable"></table>
         <form class="budget-add" id="budgetAddForm">
-          <input name="name" type="text" placeholder="Новая статья расходов" required>
-          <input name="amount" type="number" min="0" step="1" placeholder="Сумма" required>
+          <input name="name" type="text" placeholder="Новая статья расходов" required />
+          <input name="amount" type="number" min="0" step="1" placeholder="Сумма" required />
           <button class="add-btn" type="submit">Добавить</button>
         </form>
         <div class="ref-note">
@@ -58,13 +67,21 @@
       <div class="ref-card income-card" id="incomeCard">
         <div class="income-table-heading">
           <div class="ref-title">Доходы</div>
-          <button class="delete-btn" type="button" data-delete-default-table="income" title="Удалить таблицу" aria-label="Удалить таблицу">×</button>
+          <button
+            class="delete-btn"
+            type="button"
+            data-delete-default-table="income"
+            title="Удалить таблицу"
+            aria-label="Удалить таблицу"
+          >
+            ×
+          </button>
         </div>
         <div class="ref-sub">Добавляйте свои источники дохода — общая сумма обновится автоматически.</div>
         <table class="budget" id="incomeTable"></table>
         <form class="budget-add" id="incomeAddForm">
-          <input name="name" type="text" placeholder="Источник дохода" required>
-          <input name="amount" type="number" min="0" step="1" placeholder="Сумма" required>
+          <input name="name" type="text" placeholder="Источник дохода" required />
+          <input name="amount" type="number" min="0" step="1" placeholder="Сумма" required />
           <button class="add-btn" type="submit">Добавить</button>
         </form>
       </div>
@@ -73,7 +90,7 @@
       <div class="income-table-controls">
         <button class="add-btn secondary" id="addIncomeTableBtn" type="button">+ Добавить таблицу доходов</button>
         <form class="add-form income-table-form" id="incomeTableForm">
-          <input name="title" type="text" placeholder="Название таблицы" required>
+          <input name="title" type="text" placeholder="Название таблицы" required />
           <button class="add-btn" type="submit">Добавить таблицу</button>
         </form>
       </div>
