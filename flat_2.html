@@ -1,0 +1,909 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Анкета по ремонту квартиры</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #ede6d6;
+        --bg-deep: #e2d8bf;
+        --card: #fbf8f1;
+        --card-line: #d8ccac;
+        --ink: #2b241c;
+        --ink-soft: #6e6350;
+        --ink-faint: #9c9078;
+        --teal: #1f6f78;
+        --teal-deep: #164f56;
+        --gold: #c08a17;
+        --radius: 14px;
+        --shadow: 0 1px 2px rgba(43, 36, 28, 0.06), 0 6px 20px -8px rgba(43, 36, 28, 0.15);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: radial-gradient(1100px 480px at 85% -10%, rgba(31, 111, 120, 0.08), transparent 60%), var(--bg);
+        color: var(--ink);
+        font-family: 'Work Sans', sans-serif;
+        line-height: 1.5;
+        padding-bottom: 80px;
+      }
+      .wrap {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 40px 20px 0;
+      }
+      header {
+        padding-bottom: 26px;
+        border-bottom: 1px solid var(--card-line);
+        margin-bottom: 28px;
+      }
+      .eyebrow {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--teal-deep);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .eyebrow .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--gold);
+      }
+      h1 {
+        font-family: 'Newsreader', serif;
+        font-weight: 600;
+        font-size: clamp(28px, 5vw, 38px);
+        margin: 8px 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .subtitle {
+        color: var(--ink-soft);
+        font-size: 14.5px;
+        max-width: 58ch;
+      }
+      .progress-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 16px;
+      }
+      .progress-track {
+        flex: 1;
+        height: 9px;
+        border-radius: 999px;
+        background: var(--bg-deep);
+        border: 1px solid var(--card-line);
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--teal), var(--gold));
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+      .progress-num {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 13px;
+        color: var(--ink-soft);
+        white-space: nowrap;
+      }
+
+      details.section {
+        background: var(--card);
+        border: 1px solid var(--card-line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 14px;
+        overflow: hidden;
+      }
+      summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 15px 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        user-select: none;
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      summary .chev {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        color: var(--ink-faint);
+        transition: transform 0.2s ease;
+      }
+      details[open] summary .chev {
+        transform: rotate(90deg);
+      }
+      .sec-titles {
+        flex: 1;
+      }
+      .sec-title {
+        font-family: 'Newsreader', serif;
+        font-size: 18.5px;
+        font-weight: 600;
+        margin: 0;
+      }
+      .sec-desc {
+        font-size: 12.5px;
+        color: var(--ink-faint);
+        margin-top: 1px;
+      }
+      .sec-badge {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 11.5px;
+        color: var(--ink-soft);
+        background: var(--bg-deep);
+        border: 1px solid var(--card-line);
+        padding: 2px 8px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .sec-body {
+        padding: 4px 18px 18px;
+        border-top: 1px solid var(--card-line);
+      }
+
+      .field {
+        margin-top: 14px;
+      }
+      .field label {
+        display: block;
+        font-size: 13.5px;
+        color: var(--ink-soft);
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+      .field input[type='text'],
+      .field input[type='number'],
+      .field select,
+      .field textarea {
+        width: 100%;
+        font-family: 'Work Sans', sans-serif;
+        font-size: 14.5px;
+        color: var(--ink);
+        border: 1px solid var(--card-line);
+        background: #fff;
+        border-radius: 8px;
+        padding: 8px 10px;
+      }
+      .field textarea {
+        resize: vertical;
+        min-height: 60px;
+      }
+      .field input:focus,
+      .field select:focus,
+      .field textarea:focus {
+        outline: 2px solid var(--teal);
+        outline-offset: 1px;
+      }
+
+      .radio-group,
+      .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+      }
+      .radio-opt,
+      .checkbox-opt {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .checkbox-field label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14.5px;
+        color: var(--ink);
+        font-weight: 500;
+        cursor: pointer;
+      }
+      input[type='checkbox'],
+      input[type='radio'] {
+        accent-color: var(--teal);
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+
+      .export-card {
+        background: var(--card);
+        border: 1px solid var(--card-line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        margin-top: 24px;
+      }
+      .export-title {
+        font-family: 'Newsreader', serif;
+        font-size: 19px;
+        font-weight: 600;
+        margin: 0 0 4px;
+      }
+      .export-sub {
+        font-size: 13px;
+        color: var(--ink-faint);
+        margin-bottom: 12px;
+      }
+      #exportBtn {
+        font-family: 'Work Sans', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        color: #fff;
+        background: var(--teal);
+        border: none;
+        border-radius: 9px;
+        padding: 10px 18px;
+        cursor: pointer;
+      }
+      #exportBtn:hover {
+        background: var(--teal-deep);
+      }
+      #copyBtn {
+        font-family: 'Work Sans', sans-serif;
+        font-size: 13px;
+        color: var(--ink-soft);
+        background: none;
+        border: 1px solid var(--card-line);
+        border-radius: 8px;
+        padding: 7px 12px;
+        cursor: pointer;
+        margin-left: 8px;
+      }
+      #copyBtn:hover {
+        border-color: var(--ink-faint);
+        color: var(--ink);
+      }
+      #exportOutput {
+        width: 100%;
+        min-height: 0;
+        height: 0;
+        opacity: 0;
+        position: absolute;
+        pointer-events: none;
+      }
+      #exportOutput.shown {
+        height: 280px;
+        opacity: 1;
+        position: static;
+        pointer-events: auto;
+        margin-top: 14px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12.5px;
+        border: 1px solid var(--card-line);
+        border-radius: 8px;
+        padding: 12px;
+        background: #fff;
+        white-space: pre;
+        overflow: auto;
+      }
+      .copy-note {
+        font-size: 12px;
+        color: var(--ink-faint);
+        margin-top: 8px;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 36px;
+        font-size: 12px;
+        color: var(--ink-faint);
+      }
+      .reset-btn {
+        background: none;
+        border: 1px solid var(--card-line);
+        color: var(--ink-soft);
+        font-family: 'Work Sans', sans-serif;
+        font-size: 12px;
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      .reset-btn:hover {
+        border-color: var(--ink-faint);
+        color: var(--ink);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="eyebrow"><span class="dot"></span>АНКЕТА · РЕМОНТ КВАРТИРЫ</div>
+        <h1>Данные для проекта ремонта</h1>
+        <div class="subtitle">
+          Заполните по разделам — сохраняется автоматически в этом браузере. В конце можно скопировать всё одним
+          текстом.
+        </div>
+        <div class="progress-row">
+          <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+          <div class="progress-num"><b id="progPct">0%</b> · <span id="progCount">0/0</span> заполнено</div>
+        </div>
+      </header>
+
+      <div id="sections"></div>
+
+      <div class="export-card">
+        <div class="export-title">Экспорт анкеты</div>
+        <div class="export-sub">
+          Соберёт все ответы одним текстом — готово, чтобы отправить дизайнеру или вставить в чат.
+        </div>
+        <button id="exportBtn" type="button">Собрать текст</button>
+        <button id="copyBtn" type="button" hidden>Скопировать</button>
+        <textarea id="exportOutput" readonly></textarea>
+        <div class="copy-note" id="copyNote"></div>
+      </div>
+
+      <footer>
+        Данные хранятся только в этом браузере · <button class="reset-btn" id="resetBtn">Очистить анкету</button>
+      </footer>
+    </div>
+
+    <script>
+      const STORAGE_KEY = 'remont-anketa-v1';
+      let state = {};
+
+      function roomFields(prefix, withWindow) {
+        const f = [
+          { id: `${prefix}_size`, label: 'Длина × ширина', type: 'text', placeholder: 'напр. 4.2 × 3.5 м' },
+          { id: `${prefix}_height`, label: 'Высота потолка', type: 'text' },
+        ];
+        if (withWindow) {
+          f.push(
+            { id: `${prefix}_window`, label: 'Окно: ширина × высота', type: 'text' },
+            { id: `${prefix}_window_left`, label: 'От окна до левой стены', type: 'text' },
+            { id: `${prefix}_window_right`, label: 'От окна до правой стены', type: 'text' },
+          );
+        }
+        f.push(
+          { id: `${prefix}_door`, label: 'Ширина двери', type: 'text' },
+          { id: `${prefix}_door_pos`, label: 'Где дверь относительно стен', type: 'text' },
+        );
+        return f;
+      }
+
+      const sections = [
+        {
+          id: 'general',
+          title: 'Квартира в целом',
+          desc: 'Дом, этаж, общие особенности',
+          fields: [
+            { id: 'floor', label: 'Этаж', type: 'text' },
+            { id: 'floors_total', label: 'Этажей в доме', type: 'text' },
+            { id: 'house_type', label: 'Тип дома', type: 'text', placeholder: 'панель / кирпич / монолит' },
+            { id: 'balcony', label: 'Балкон / лоджия', type: 'radio', options: ['Да', 'Нет'] },
+            { id: 'corner', label: 'Квартира угловая', type: 'radio', options: ['Да', 'Нет'] },
+            { id: 'basement', label: 'Подвал под квартирой', type: 'radio', options: ['Да', 'Нет', 'Не знаю'] },
+            { id: 'mold', label: 'Плесень / сырость сейчас', type: 'radio', options: ['Да', 'Нет'] },
+            { id: 'leaks', label: 'Были протечки', type: 'radio', options: ['Да', 'Нет'] },
+            { id: 'gas', label: 'Газ есть', type: 'radio', options: ['Да', 'Нет'] },
+            { id: 'gas_heater', label: 'Газовая колонка', type: 'radio', options: ['Да', 'Нет'] },
+            { id: 'load_walls', label: 'Несущие стены известны', type: 'radio', options: ['Да', 'Нет', 'Не знаю'] },
+          ],
+        },
+        { id: 'room1', title: 'Комната 1', desc: 'Размеры и проёмы', fields: roomFields('room1', true) },
+        { id: 'room2', title: 'Комната 2', desc: 'Размеры и проёмы', fields: roomFields('room2', true) },
+        { id: 'kitchen', title: 'Кухня', desc: 'Размеры и проёмы', fields: roomFields('kitchen', true) },
+        {
+          id: 'hallway',
+          title: 'Прихожая',
+          desc: 'Часто сложная форма — опишите словами',
+          fields: [
+            {
+              id: 'hallway_scheme',
+              label: 'Размер / схема (если форма сложная — опишите или отметьте, что приложите фото схемы)',
+              type: 'textarea',
+            },
+          ],
+        },
+        { id: 'bathroom', title: 'Ванная', desc: 'Размеры и дверь', fields: roomFields('bathroom', false) },
+        { id: 'toilet', title: 'Туалет', desc: 'Размеры и дверь', fields: roomFields('toilet', false) },
+        {
+          id: 'photos',
+          title: 'Фотографии',
+          desc: 'Чек-лист того, что нужно снять',
+          fields: [
+            {
+              id: 'photos_rooms',
+              label: 'По каждой комнате: углы, стены, пол, потолок, окно, дверь, радиатор, розетки',
+              type: 'checkbox',
+            },
+            {
+              id: 'photos_kitchen',
+              label: 'Кухня отдельно (плюс всё подозрительное — трещины, сырость, вздутия)',
+              type: 'checkbox',
+            },
+            { id: 'photos_bathroom', label: 'Санузел отдельно', type: 'checkbox' },
+            { id: 'photos_notes', label: 'Заметки по фото', type: 'textarea' },
+          ],
+        },
+        {
+          id: 'electrics',
+          title: 'Электрика',
+          desc: 'Щиток и проводка',
+          fields: [
+            { id: 'elec_panel_photo', label: 'Фото электрощитка сделано', type: 'checkbox' },
+            {
+              id: 'elec_breakers_photo',
+              label: 'Фото автоматов крупным планом (чтобы читались надписи)',
+              type: 'checkbox',
+            },
+            { id: 'elec_cable_photo', label: 'Фото ввода кабеля в квартиру', type: 'checkbox' },
+            { id: 'elec_outlets_photo', label: '3–5 фото существующих розеток', type: 'checkbox' },
+            { id: 'elec_wires_photo', label: 'Фото открытых проводов (если есть)', type: 'checkbox' },
+            { id: 'elec_notes', label: 'Что уже известно про электрику', type: 'textarea' },
+          ],
+        },
+        {
+          id: 'utilities',
+          title: 'Вода, канализация, отопление',
+          desc: '',
+          fields: [
+            {
+              id: 'water_cold',
+              label: 'Холодная вода',
+              type: 'select',
+              options: ['Центральная', 'Скважина', 'Другое', 'Не знаю'],
+            },
+            {
+              id: 'water_hot',
+              label: 'Горячая вода',
+              type: 'select',
+              options: ['Центральная', 'Бойлер', 'Колонка', 'Не знаю'],
+            },
+            { id: 'sewer_riser', label: 'Где стояк канализации', type: 'text' },
+            { id: 'sewer_kitchen', label: 'Где кухня подключена к канализации', type: 'text' },
+            { id: 'sewer_bathroom', label: 'Где ванная / туалет подключены', type: 'text' },
+            { id: 'heating_type', label: 'Отопление', type: 'select', options: ['Центральное', 'Своё', 'Не знаю'] },
+            { id: 'heating_pipes', label: 'Какие трубы', type: 'text' },
+            { id: 'heating_radiators', label: 'Какие радиаторы', type: 'text' },
+            {
+              id: 'heating_cold',
+              label: 'Были зимой проблемы с холодом',
+              type: 'radio',
+              options: ['Да', 'Нет', 'Не знаю'],
+            },
+          ],
+        },
+        {
+          id: 'usage',
+          title: 'Как будете использовать комнаты',
+          desc: '',
+          fields: [
+            { id: 'use_room1', label: 'Комната 1 будет', type: 'text', placeholder: 'спальня' },
+            { id: 'use_room2', label: 'Комната 2 будет', type: 'text', placeholder: 'гостиная + рабочее место' },
+            { id: 'use_kitchen', label: 'Кухня будет', type: 'text' },
+            { id: 'use_hallway', label: 'Прихожая будет', type: 'text' },
+            { id: 'use_bathroom', label: 'Ванная будет', type: 'text' },
+            { id: 'use_toilet', label: 'Туалет будет', type: 'text' },
+          ],
+        },
+        {
+          id: 'residents',
+          title: 'Кто будет жить',
+          desc: '',
+          fields: [
+            { id: 'adults', label: 'Взрослых', type: 'number' },
+            { id: 'children', label: 'Детей', type: 'number' },
+            { id: 'pets', label: 'Животные (какие и сколько)', type: 'text' },
+            { id: 'residency', label: 'Постоянно или временно', type: 'radio', options: ['Постоянно', 'Временно'] },
+            {
+              id: 'cats_considerations',
+              label: 'Учитывать кошек в ремонте (защита стен, когтеточки, сетки, закрытые лотки)',
+              type: 'checkbox',
+            },
+            { id: 'cats_notes', label: 'Заметки про животных', type: 'textarea' },
+          ],
+        },
+        {
+          id: 'appliances',
+          title: 'Техника',
+          desc: 'Что точно понадобится',
+          fields: [
+            {
+              id: 'appl_kitchen',
+              label: 'Кухня',
+              type: 'checkboxGroup',
+              options: [
+                'Холодильник',
+                'Плита',
+                'Духовка',
+                'Вытяжка',
+                'Микроволновка',
+                'Посудомойка',
+                'Стиральная машина',
+              ],
+            },
+            { id: 'appl_kitchen_other', label: 'Кухня — другое', type: 'text' },
+            {
+              id: 'appl_rooms',
+              label: 'Комнаты',
+              type: 'checkboxGroup',
+              options: ['Телевизор', 'Компьютер', 'Рабочий стол', 'Кондиционер'],
+            },
+            { id: 'appl_rooms_other', label: 'Комнаты — другое', type: 'text' },
+            {
+              id: 'appl_bath',
+              label: 'Санузел',
+              type: 'checkboxGroup',
+              options: ['Ванна', 'Душевая', 'Стиральная машина', 'Бойлер', 'Раковина', 'Зеркало с подсветкой'],
+            },
+          ],
+        },
+        {
+          id: 'prefs',
+          title: 'Предпочтения',
+          desc: '',
+          fields: [
+            {
+              id: 'colors_like',
+              label: 'Цвета, которые нравятся',
+              type: 'text',
+              placeholder: 'белый / серый / дерево',
+            },
+            {
+              id: 'colors_dislike',
+              label: 'Что категорически не нравится',
+              type: 'text',
+              placeholder: 'глянец, яркие стены',
+            },
+            {
+              id: 'floor_material',
+              label: 'Пол',
+              type: 'select',
+              options: ['Ламинат', 'Кварцвинил', 'Линолеум', 'Не знаю'],
+            },
+            {
+              id: 'wall_finish',
+              label: 'Стены',
+              type: 'select',
+              options: ['Обои', 'Покраска', 'Комбинация', 'Не знаю'],
+            },
+            {
+              id: 'ceiling_finish',
+              label: 'Потолок',
+              type: 'select',
+              options: ['Натяжной', 'Штукатурка + покраска', 'Не знаю'],
+            },
+          ],
+        },
+        {
+          id: 'budget',
+          title: 'Бюджет',
+          desc: '',
+          fields: [
+            { id: 'budget_total', label: 'На всё вместе, ₽', type: 'number' },
+            { id: 'budget_now', label: 'Сейчас доступно, ₽', type: 'number' },
+            { id: 'budget_monthly', label: 'После въезда готовы тратить в месяц, ₽', type: 'number' },
+          ],
+        },
+        {
+          id: 'skills',
+          title: 'Навыки и инструменты',
+          desc: '',
+          fields: [
+            {
+              id: 'skills_list',
+              label: 'Умею делать',
+              type: 'checkboxGroup',
+              options: [
+                'Демонтаж',
+                'Электрика',
+                'Штробление',
+                'Штукатурка',
+                'Шпаклёвка',
+                'Покраска',
+                'Обои',
+                'Плитка',
+                'Ламинат',
+                'Линолеум',
+                'Гипсокартон',
+                'Сантехника',
+                'Сборка мебели',
+              ],
+            },
+            {
+              id: 'tools_list',
+              label: 'Есть инструменты',
+              type: 'checkboxGroup',
+              options: [
+                'Перфоратор',
+                'Шуруповёрт',
+                'Болгарка',
+                'Лобзик',
+                'Строительный уровень',
+                'Лазерный уровень',
+                'Миксер',
+              ],
+            },
+            { id: 'tools_other', label: 'Другие инструменты', type: 'text' },
+          ],
+        },
+      ];
+
+      function escapeHtml(v) {
+        return String(v ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function loadState() {
+        try {
+          state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        } catch (e) {
+          state = {};
+        }
+      }
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {}
+      }
+
+      function fieldHTML(f) {
+        const v = state[f.id];
+        if (f.type === 'text' || f.type === 'number') {
+          return `<div class="field"><label>${f.label}</label><input type="${f.type}" data-field="${f.id}" data-type="simple" value="${escapeHtml(v ?? '')}" placeholder="${escapeHtml(f.placeholder || '')}"></div>`;
+        }
+        if (f.type === 'textarea') {
+          return `<div class="field"><label>${f.label}</label><textarea data-field="${f.id}" data-type="simple" rows="3">${escapeHtml(v ?? '')}</textarea></div>`;
+        }
+        if (f.type === 'select') {
+          const opts = [
+            '<option value="">— выбрать —</option>',
+            ...f.options.map((o) => `<option ${v === o ? 'selected' : ''}>${o}</option>`),
+          ];
+          return `<div class="field"><label>${f.label}</label><select data-field="${f.id}" data-type="simple">${opts.join('')}</select></div>`;
+        }
+        if (f.type === 'radio') {
+          return `<div class="field"><label>${f.label}</label><div class="radio-group">${f.options.map((o) => `<label class="radio-opt"><input type="radio" name="${f.id}" value="${o}" data-type="radio" ${v === o ? 'checked' : ''}>${o}</label>`).join('')}</div></div>`;
+        }
+        if (f.type === 'checkbox') {
+          return `<div class="field checkbox-field"><label><input type="checkbox" data-field="${f.id}" data-type="bool" ${v ? 'checked' : ''}>${f.label}</label></div>`;
+        }
+        if (f.type === 'checkboxGroup') {
+          const arr = Array.isArray(v) ? v : [];
+          return `<div class="field"><label>${f.label}</label><div class="checkbox-group">${f.options.map((o) => `<label class="checkbox-opt"><input type="checkbox" data-group="${f.id}" data-type="group" value="${o}" ${arr.includes(o) ? 'checked' : ''}>${o}</label>`).join('')}</div></div>`;
+        }
+        return '';
+      }
+
+      function isFilled(f) {
+        const v = state[f.id];
+        if (f.type === 'checkbox') return !!v;
+        if (f.type === 'checkboxGroup') return Array.isArray(v) && v.length > 0;
+        return v !== undefined && String(v).trim() !== '';
+      }
+
+      function render() {
+        const container = document.getElementById('sections');
+        container.innerHTML = sections
+          .map((sec) => {
+            const total = sec.fields.length;
+            const done = sec.fields.filter(isFilled).length;
+            return `
+      <details class="section" data-sec="${sec.id}">
+        <summary>
+          <svg class="chev" viewBox="0 0 20 20" fill="none"><path d="M7 4l7 6-7 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="sec-titles">
+            <p class="sec-title">${sec.title}</p>
+            ${sec.desc ? `<div class="sec-desc">${sec.desc}</div>` : ''}
+          </div>
+          <div class="sec-badge">${done}/${total}</div>
+        </summary>
+        <div class="sec-body">${sec.fields.map(fieldHTML).join('')}</div>
+      </details>`;
+          })
+          .join('');
+
+        container.querySelectorAll('[data-type]').forEach((el) => {
+          const evt = el.tagName === 'SELECT' || el.type === 'checkbox' || el.type === 'radio' ? 'change' : 'input';
+          el.addEventListener(evt, handleFieldChange);
+        });
+
+        updateProgress();
+      }
+
+      function handleFieldChange(e) {
+        const el = e.target;
+        const type = el.dataset.type;
+        if (type === 'simple') state[el.dataset.field] = el.value;
+        else if (type === 'bool') state[el.dataset.field] = el.checked;
+        else if (type === 'radio') state[el.name] = el.value;
+        else if (type === 'group') {
+          const key = el.dataset.group;
+          const groupEls = document.querySelectorAll(`[data-type="group"][data-group="${key}"]`);
+          state[key] = [...groupEls].filter((x) => x.checked).map((x) => x.value);
+        }
+        saveState();
+        updateSectionBadge(el.closest('.section'));
+        updateProgress();
+      }
+
+      function updateSectionBadge(sectionEl) {
+        if (!sectionEl) return;
+        const sec = sections.find((s) => s.id === sectionEl.dataset.sec);
+        const done = sec.fields.filter(isFilled).length;
+        sectionEl.querySelector('.sec-badge').textContent = `${done}/${sec.fields.length}`;
+      }
+
+      function updateProgress() {
+        const allFields = sections.flatMap((s) => s.fields);
+        const done = allFields.filter(isFilled).length;
+        const pct = allFields.length ? Math.round((done / allFields.length) * 100) : 0;
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('progPct').textContent = pct + '%';
+        document.getElementById('progCount').textContent = `${done}/${allFields.length}`;
+      }
+
+      function g(id, fallback) {
+        const v = state[id];
+        return v !== undefined && String(v).trim() !== '' ? v : (fallback ?? 'не указано');
+      }
+      function gArr(id) {
+        const v = state[id];
+        return Array.isArray(v) && v.length ? v.join(', ') : 'не указано';
+      }
+      function gBool(id) {
+        return state[id] ? 'да' : 'нет';
+      }
+
+      function buildExportText() {
+        return `ЭТАЖ: ${g('floor')}
+ЭТАЖЕЙ В ДОМЕ: ${g('floors_total')}
+ТИП ДОМА: ${g('house_type')}
+БАЛКОН: ${g('balcony')}
+КВАРТИРА УГЛОВАЯ: ${g('corner')}
+ПОДВАЛ: ${g('basement')}
+ПЛЕСЕНЬ/СЫРОСТЬ: ${g('mold')}
+ПРОТЕЧКИ БЫЛИ: ${g('leaks')}
+ГАЗ: ${g('gas')} (колонка: ${g('gas_heater')})
+НЕСУЩИЕ СТЕНЫ ИЗВЕСТНЫ: ${g('load_walls')}
+
+КОМНАТА 1:
+размер: ${g('room1_size')}
+высота: ${g('room1_height')}
+окно: ${g('room1_window')} (от левой стены ${g('room1_window_left')}, от правой ${g('room1_window_right')})
+дверь: ${g('room1_door')}, ${g('room1_door_pos')}
+
+КОМНАТА 2:
+размер: ${g('room2_size')}
+высота: ${g('room2_height')}
+окно: ${g('room2_window')} (от левой стены ${g('room2_window_left')}, от правой ${g('room2_window_right')})
+дверь: ${g('room2_door')}, ${g('room2_door_pos')}
+
+КУХНЯ:
+размер: ${g('kitchen_size')}
+высота: ${g('kitchen_height')}
+окно: ${g('kitchen_window')} (от левой стены ${g('kitchen_window_left')}, от правой ${g('kitchen_window_right')})
+дверь: ${g('kitchen_door')}, ${g('kitchen_door_pos')}
+
+ПРИХОЖАЯ:
+размер/схема: ${g('hallway_scheme')}
+
+ВАННА:
+размер: ${g('bathroom_size')}
+высота: ${g('bathroom_height')}
+дверь: ${g('bathroom_door')}, ${g('bathroom_door_pos')}
+
+ТУАЛЕТ:
+размер: ${g('toilet_size')}
+высота: ${g('toilet_height')}
+дверь: ${g('toilet_door')}, ${g('toilet_door_pos')}
+
+ФОТО СДЕЛАНЫ: комнаты — ${gBool('photos_rooms')}, кухня — ${gBool('photos_kitchen')}, санузел — ${gBool('photos_bathroom')}
+ЗАМЕТКИ ПО ФОТО: ${g('photos_notes')}
+
+ЭЛЕКТРИКА:
+щиток сфотографирован: ${gBool('elec_panel_photo')}
+автоматы крупным планом: ${gBool('elec_breakers_photo')}
+ввод кабеля: ${gBool('elec_cable_photo')}
+розетки (3-5 фото): ${gBool('elec_outlets_photo')}
+открытые провода: ${gBool('elec_wires_photo')}
+что известно: ${g('elec_notes')}
+
+ВОДА:
+холодная: ${g('water_cold')}
+горячая: ${g('water_hot')}
+
+КАНАЛИЗАЦИЯ:
+стояк: ${g('sewer_riser')}
+кухня подключена: ${g('sewer_kitchen')}
+ванная/туалет подключены: ${g('sewer_bathroom')}
+
+ОТОПЛЕНИЕ: ${g('heating_type')}
+трубы: ${g('heating_pipes')}
+радиаторы: ${g('heating_radiators')}
+проблемы с холодом зимой: ${g('heating_cold')}
+
+КОМНАТА 1 БУДЕТ: ${g('use_room1')}
+КОМНАТА 2 БУДЕТ: ${g('use_room2')}
+КУХНЯ БУДЕТ: ${g('use_kitchen')}
+ПРИХОЖАЯ БУДЕТ: ${g('use_hallway')}
+ВАННАЯ БУДЕТ: ${g('use_bathroom')}
+ТУАЛЕТ БУДЕТ: ${g('use_toilet')}
+
+ЖИТЬ БУДУТ: взрослых — ${g('adults')}, детей — ${g('children')}
+ЖИВОТНЫЕ: ${g('pets')}
+УЧИТЫВАТЬ КОШЕК В РЕМОНТЕ: ${gBool('cats_considerations')} (${g('cats_notes', '')})
+ПОСТОЯННО/ВРЕМЕННО: ${g('residency')}
+
+ТЕХНИКА:
+кухня: ${gArr('appl_kitchen')}${state.appl_kitchen_other ? ', ' + state.appl_kitchen_other : ''}
+комнаты: ${gArr('appl_rooms')}${state.appl_rooms_other ? ', ' + state.appl_rooms_other : ''}
+санузел: ${gArr('appl_bath')}
+
+ЧТО НРАВИТСЯ: ${g('colors_like')}
+ЧТО НЕ НРАВИТСЯ: ${g('colors_dislike')}
+ПОЛ: ${g('floor_material')}
+СТЕНЫ: ${g('wall_finish')}
+ПОТОЛОК: ${g('ceiling_finish')}
+
+БЮДЖЕТ НА ВСЁ: ${g('budget_total')}
+ЕСТЬ СЕЙЧАС: ${g('budget_now')}
+В МЕСЯЦ ПОСЛЕ ВЪЕЗДА: ${g('budget_monthly')}
+
+МОИ НАВЫКИ: ${gArr('skills_list')}
+ИНСТРУМЕНТЫ: ${gArr('tools_list')}${state.tools_other ? ', ' + state.tools_other : ''}`;
+      }
+
+      document.getElementById('exportBtn').addEventListener('click', () => {
+        const out = document.getElementById('exportOutput');
+        out.value = buildExportText();
+        out.classList.add('shown');
+        document.getElementById('copyBtn').hidden = false;
+        document.getElementById('copyNote').textContent = '';
+      });
+
+      document.getElementById('copyBtn').addEventListener('click', async () => {
+        const out = document.getElementById('exportOutput');
+        try {
+          await navigator.clipboard.writeText(out.value);
+          document.getElementById('copyNote').textContent = 'Скопировано в буфер обмена.';
+        } catch (e) {
+          out.select();
+          document.getElementById('copyNote').textContent =
+            'Не удалось скопировать автоматически — текст выделен, скопируйте вручную (Ctrl+C).';
+        }
+      });
+
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        if (!confirm('Очистить всю анкету? Это нельзя отменить.')) return;
+        state = {};
+        saveState();
+        render();
+        document.getElementById('exportOutput').classList.remove('shown');
+        document.getElementById('copyBtn').hidden = true;
+      });
+
+      loadState();
+      render();
+    </script>
+  </body>
+</html>
